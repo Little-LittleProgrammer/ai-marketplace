@@ -37,6 +37,9 @@ cc --plugin-dir /path/to/qm-ai-workflow
 
 # Rollback if needed
 /qm-ai:rollback
+
+# Optimize workflow and archive knowledge
+/qm-ai:optimize-flow
 ```
 
 ## Workflow Phases
@@ -74,12 +77,13 @@ project/
 ### Skills (21)
 - Workflow management, requirement handling, design, development, memory system
 
-### Commands (5)
+### Commands (6)
 - /qm-ai:init - Initialize project knowledge (cold start)
 - /qm-ai:start - Start workflow
 - /qm-ai:continue - Next phase
 - /qm-ai:rollback - Rollback
 - /qm-ai:status - View status
+- /qm-ai:optimize-flow - Optimize workflow and archive knowledge
 
 ## License
 

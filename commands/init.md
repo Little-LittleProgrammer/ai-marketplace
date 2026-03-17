@@ -18,11 +18,27 @@ Analyze existing project structure and generate or update AGENT.md with comprehe
 
 ## Instructions
 
+### 0. Skill Routing 
+
+When executing `/qm-ai:init`, prioritize skills in the following order:
+
+1. **memory-system (Required)**
+   - First read the memory system structure specification to ensure consistency between `AGENT.md` and `context/` artifact structures.
+2. **service-overview (Required)**
+   - Used to quickly establish overall understanding of service boundaries, responsibilities, and directory structure.
+3. **service-architecture / service-business / service-ops (As needed)**
+   - When the project has backend services or a clear API layer, respectively supplement architecture, business logic, and interface contract analysis.
+4. **agents-memory-maintainer (Required)**
+   - When generating or updating `AGENT.md`, follow the structure and maintenance process defined by this skill.
+5. **index-manage (Required)**
+   - After initializing or updating `context/index.json`, execute index consistency checks and corrections.
+
 ### 1. Check Existing Knowledge
 
 First, check if AGENT.md already exists:
 - If exists: Read and analyze current content, then update with new findings
 - If not exists: Create new AGENT.md from scratch
+- Apply `memory-system` to validate target structure before writing.
 
 ### 2. Analyze Project Structure
 
@@ -45,6 +61,11 @@ Use Glob to find:
 - `**/requirements.txt` - Python projects
 - `**/*.config.{js,ts,json}` - Config files
 
+Then apply `service-overview`:
+- Identify service boundaries and responsibilities
+- Confirm entry points and module layout
+- Produce a concise service overview for AGENT.md
+
 ### 3. Analyze Technology Stack
 
 Identify technologies used:
@@ -63,6 +84,11 @@ Identify technologies used:
 - Docker/Kubernetes
 - CI/CD configuration
 - Cloud services
+
+When applicable, apply deep-dive skills:
+- `service-architecture`: extract architecture style and design patterns
+- `service-business`: identify business entities/rules/workflows
+- `service-ops`: map APIs, contracts, and communication protocols
 
 ### 4. Analyze Code Patterns
 
@@ -103,6 +129,11 @@ Create or update AGENT.md with:
 [需要特别注意的地方]
 ```
 
+Use `agents-memory-maintainer` to enforce AGENT.md structure quality:
+- Keep structure stable and sections complete
+- Record reusable patterns and key decisions
+- Keep content concise and actionable
+
 ### 6. Update Context Knowledge
 
 After generating AGENT.md:
@@ -110,6 +141,7 @@ After generating AGENT.md:
 - Initialize `context/index.json`
 - Move detailed patterns to `context/patterns/`
 - Move best practices to `context/best-practices/`
+- Apply `index-manage` to check and repair index consistency.
 
 ## Output Format
 
@@ -126,6 +158,15 @@ After generating AGENT.md:
 - [x] 技术栈已分析
 - [x] 架构已总结
 - [x] 模式已提取
+
+### Skills 调用情况
+- [x] memory-system
+- [x] service-overview
+- [ ] service-architecture（按需）
+- [ ] service-business（按需）
+- [ ] service-ops（按需）
+- [x] agents-memory-maintainer
+- [x] index-manage
 
 ### 关键发现
 1. [发现1]
@@ -159,6 +200,15 @@ Response:
 - [x] 技术栈已分析
 - [x] 架构已总结
 - [x] 模式已提取
+
+### Skills 调用情况
+- [x] memory-system
+- [x] service-overview
+- [x] service-architecture
+- [x] service-business
+- [x] service-ops
+- [x] agents-memory-maintainer
+- [x] index-manage
 
 ### 关键发现
 1. 使用 Repository 模式进行数据访问
