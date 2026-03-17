@@ -155,16 +155,18 @@
 
 ## 四、组件清单
 
-### 4.1 Agents (7个)
+### 4.1 Agents (9个)
 
 | Agent | 职责 | 调用的 Skills | 工具权限 |
 |-------|------|---------------|----------|
 | **phase-router** | 意图识别和路由 | - | Read, AskUserQuestion |
 | **requirement-manager** | 需求生命周期管理 | req-create, req-change, requirement-complete, requirement-archive | Read, Write, Edit |
 | **design-manager** | 方案生命周期管理 | design-create, design-change | Read, Write, Edit |
+| **task-decomposer** | 任务分解和规划 | - | Read, Write, Edit |
 | **code-executor** | 开发生命周期管理 | workspace-setup, code-commit | Read, Write, Edit, Bash |
 | **frontend-coder** | 前端开发管理 | design-impl | Read, Write, Edit, Bash |
 | **backend-coder** | 后端开发管理 | design-impl | Read, Write, Edit, Bash |
+| **test-generator** | 测试生成和质量保证 | testing | Read, Write, Edit, Bash |
 | **experience-depositor** | 经验沉淀管理 | experience-index, mate-maintainer, index-manage, agents-memory-maintainer | Read, Write, Edit |
 
 ### 4.2 Skills (21个)
@@ -206,13 +208,14 @@
 | **service-architecture** | 架构分析 | 理解系统架构 | explore |
 | **service-ops** | 服务协议分析 | 理解服务接口 | explore |
 
-#### 基础 Skills (4个)
+#### 基础 Skills (5个)
 | Skill | 职责 | 触发条件 | 备注 |
 |-------|------|----------|------|
 | **workflow-guide** | 工作流指南 | 自动加载 | 核心指南 |
 | **memory-system** | 记忆系统使用指南 | 自动加载 | 核心指南 |
 | **feishu-doc** | 飞书需求文档获取 | `/start` 包含链接 | **用户自实现** |
 | **explore** | 探索/分析模式 | `/start` 简单需求描述 | 不写代码，头脑风暴 |
+| **testing** | 测试生成和质量保证 | test-generator 调用 | 测试支持 |
 
 ### 4.3 Commands (4个)
 

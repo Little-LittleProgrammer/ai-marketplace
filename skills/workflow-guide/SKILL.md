@@ -10,14 +10,14 @@ version: 0.1.0
 
 QM-AI Workflow 是一个覆盖从需求到开发完成的完整工作流系统，包含以下阶段：
 
-| 阶段 | 状态 | 主要产物 | 触发命令 |
-|------|------|----------|----------|
-| 需求分析 | ANALYSIS | spec.md | /qm-ai:start → /qm-ai:continue |
-| 架构设计 | DESIGN | design.md | /qm-ai:continue |
-| 任务分解 | TASK | task.md | /qm-ai:continue |
-| 代码开发 | CODING | 源代码 | /qm-ai:continue |
-| 测试验证 | TESTING | 测试代码 | 自动流转 |
-| 知识沉淀 | COMPLETE | AGENT.md更新 | /qm-ai:knowledge |
+| 阶段 | 状态 | 主要产物 | 负责 Agent | 触发命令 |
+|------|------|----------|-----------|----------|
+| 需求分析 | ANALYSIS | spec.md | requirement-manager | /qm-ai:start |
+| 架构设计 | DESIGN | design.md | design-manager | /qm-ai:continue |
+| 任务分解 | TASK | task.md | task-decomposer | /qm-ai:continue |
+| 代码开发 | CODING | 源代码 | code-executor | /qm-ai:continue |
+| 测试验证 | TESTING | 测试代码 | test-generator | 自动流转 |
+| 知识沉淀 | COMPLETE | AGENT.md更新 | experience-depositor | /qm-ai:optimize-flow |
 
 ## 产物定义
 

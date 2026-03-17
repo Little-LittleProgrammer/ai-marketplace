@@ -41,13 +41,39 @@ Confirm current phase and transition to the next workflow phase.
 
 ## Phase Transitions
 
-| Current Phase | Next Phase | Required Output |
-|---------------|------------|-----------------|
-| ANALYSIS | DESIGN | spec.md |
-| DESIGN | TASK | design.md |
-| TASK | CODING | task.md |
-| CODING | TESTING | source code |
-| TESTING | COMPLETE | test code |
+| Current Phase | Next Phase | Required Output | Next Agent |
+|---------------|------------|-----------------|------------|
+| ANALYSIS | DESIGN | spec.md | design-manager |
+| DESIGN | TASK | design.md | task-decomposer |
+| TASK | CODING | task.md | code-executor |
+| CODING | TESTING | source code | test-generator |
+| TESTING | COMPLETE | test code | experience-depositor |
+
+## Agent Invocation
+
+When transitioning phases, invoke the appropriate agent:
+
+```markdown
+### ANALYSIS → DESIGN
+Invoke: design-manager
+Message: "需求分析已完成，开始架构设计"
+
+### DESIGN → TASK
+Invoke: task-decomposer
+Message: "设计已完成，开始任务分解"
+
+### TASK → CODING
+Invoke: code-executor
+Message: "任务已分解，开始开发"
+
+### CODING → TESTING
+Invoke: test-generator
+Message: "代码开发完成，开始测试"
+
+### TESTING → COMPLETE
+Invoke: experience-depositor
+Message: "测试通过，开始知识沉淀"
+```
 
 ## Example Usage
 

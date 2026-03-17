@@ -65,17 +65,19 @@ project/
 
 ## Components
 
-### Agents (7)
+### Agents (9)
 - phase-router - Intent recognition and routing
 - requirement-manager - Requirements lifecycle
 - design-manager - Design lifecycle
+- task-decomposer - Task breakdown and planning
 - code-executor - Development lifecycle
 - frontend-coder - Frontend development
 - backend-coder - Backend development
+- test-generator - Test generation and QA
 - experience-depositor - Knowledge management
 
-### Skills (21)
-- Workflow management, requirement handling, design, development, memory system
+### Skills (22)
+- Workflow management, requirement handling, design, development, testing, memory system
 
 ### Commands (6)
 - /qm-ai:init - Initialize project knowledge (cold start)
