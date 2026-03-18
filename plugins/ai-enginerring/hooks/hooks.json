@@ -1,8 +1,10 @@
 {
-  "SessionEnd": [
-    {
-      "type": "prompt",
-      "prompt": "Save the current workflow state before the session ends. If .qm-ai/state.json exists, update the updated_at timestamp. If there are any unsaved outputs, remind the user about them."
-    }
-  ]
+	"hooks": {
+		"SessionEnd": [
+			{
+				"type": "prompt",
+				"prompt": "Save the current workflow state before the session ends. If .qm-ai/state.json exists, update the updated_at timestamp. If there are any unsaved outputs, remind the user about them."
+			}
+		]
+	}
 }
