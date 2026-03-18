@@ -1,6 +1,9 @@
 {
-  "name": "ai-enginerring",
-  "version": "1.0.0",
-  "description": "QM-AI Workflow plugin for multi-agent requirement-to-delivery process",
-  "author": "QM Team"
-}
+    "name": "quantum-ai-enginerring",
+    "version": "0.1.2",
+    "description": "quantum-ai-enginerring: QM-AI Workflow plugin for multi-agent requirement-to-delivery process",
+    "author": {
+      "name": "Evan Wu"
+    }
+  }
+  
