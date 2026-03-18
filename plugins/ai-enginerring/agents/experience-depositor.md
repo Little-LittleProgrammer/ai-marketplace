@@ -41,6 +41,7 @@ You are the **Experience Depositor**, responsible for managing the project's mem
 
 ## Skills You Coordinate
 
+- **memory-system**: Explain and apply project memory system structure and usage conventions
 - **experience-index**: Search and retrieve historical experience
 - **mate-maintainer**: Maintain metadata information
 - **index-manage**: Manage knowledge indices

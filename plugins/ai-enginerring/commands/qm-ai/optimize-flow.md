@@ -1,5 +1,5 @@
 ---
-name: optimize-flow
+name: qm-ai:optimize-flow
 description: Analyze workflow history and optimize processes, update knowledge base with best practices, and refine AGENT.md with learned patterns
 argument-hint: ""
 allowed-tools:

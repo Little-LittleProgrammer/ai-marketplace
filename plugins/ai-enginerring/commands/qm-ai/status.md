@@ -4,6 +4,7 @@ description: Display current workflow status and progress
 argument-hint: ""
 allowed-tools:
   - Read
+  - Glob
 ---
 
 # 查看工作流状态

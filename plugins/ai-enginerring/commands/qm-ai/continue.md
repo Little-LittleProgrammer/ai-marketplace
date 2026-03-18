@@ -1,6 +1,6 @@
 ---
 name: qm-ai:continue
-description: Confirm current phase output and proceed to the next workflow phase
+description: Confirm current phase outputs and delegate next-phase routing to phase-router
 argument-hint: ""
 allowed-tools:
   - Read
@@ -11,7 +11,7 @@ allowed-tools:
 
 # 继续下一阶段
 
-Confirm current phase and transition to the next workflow phase.
+Confirm current phase outputs and hand off routing decision.
 
 ## Instructions
 
@@ -24,11 +24,12 @@ Confirm current phase and transition to the next workflow phase.
    - Verify output completeness
 
 3. **Update State**
-   - Transition to next phase
+   - Sync validation results and latest outputs
+   - Do not determine or hardcode next phase in this command
    - Update `state.json`:
    ```json
    {
-     "current_phase": "<next_phase>",
+     "current_phase": "<keep_current_phase>",
      "updated_at": "<timestamp>",
      "outputs": {
        "<phase>": ["<output_files>"]
@@ -36,43 +37,24 @@ Confirm current phase and transition to the next workflow phase.
    }
    ```
 
-4. **Invoke Next Agent**
-   - Use Agent tool to invoke appropriate agent for next phase
+4. **Invoke Router Agent**
+   - Always use Agent tool to invoke `phase-router`
+   - Provide current phase and available outputs as routing context
+   - Let `phase-router` decide which specific agent and skill should execute next
 
-## Phase Transitions
+## Routing Principle
 
-| Current Phase | Next Phase | Required Output | Next Agent |
-|---------------|------------|-----------------|------------|
-| ANALYSIS | DESIGN | spec.md | design-manager |
-| DESIGN | TASK | design.md | task-decomposer |
-| TASK | CODING | task.md | code-executor |
-| CODING | TESTING | source code | test-generator |
-| TESTING | COMPLETE | test code | experience-depositor |
+- Do not define fixed phase transitions in `/continue`
+- Do not hardcode next agent or next skill in `/continue`
+- Always delegate phase decision and dispatching to `phase-router`
 
 ## Agent Invocation
 
-When transitioning phases, invoke the appropriate agent:
+Always invoke `phase-router` with current context:
 
 ```markdown
-### ANALYSIS → DESIGN
-Invoke: design-manager
-Message: "需求分析已完成，开始架构设计"
-
-### DESIGN → TASK
-Invoke: task-decomposer
-Message: "设计已完成，开始任务分解"
-
-### TASK → CODING
-Invoke: code-executor
-Message: "任务已分解，开始开发"
-
-### CODING → TESTING
-Invoke: test-generator
-Message: "代码开发完成，开始测试"
-
-### TESTING → COMPLETE
-Invoke: experience-depositor
-Message: "测试通过，开始知识沉淀"
+Invoke: phase-router
+Message: "当前阶段与产物已校验完成。请基于 `.qm-ai/state.json` 和现有产物，判断应进入的下一阶段，并路由到合适的 agent 和 skill。"
 ```
 
 ## Example Usage
@@ -84,10 +66,9 @@ Response:
 ## 阶段确认
 
 **上一阶段**: 需求分析
-**当前阶段**: 架构设计
 **产物**: spec-001.md
 
-准备调用 design-manager 进行架构设计...
+准备调用 phase-router 进行统一路由派发...
 ```
 
 ## Error Handling
