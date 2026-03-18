@@ -1,0 +1,19 @@
+{
+    "name": "quantum-ai-enginerring",
+    "owner": {
+      "name": "AI-Marketplace"
+    },
+    "plugins": [
+      {
+        "name": "quantum-ai-enginerring",
+        "version": "0.1.1",
+        "source": "./plugins/ai-enginerring",
+        "description": "Multi-agent workflow plugin covering requirements to development completion with intelligent intent routing",
+        "author": {
+          "name": "AI-Marketplace",
+          "email": "ai-marketplace@example.com"
+        }
+      }
+    ]
+  }
+  
