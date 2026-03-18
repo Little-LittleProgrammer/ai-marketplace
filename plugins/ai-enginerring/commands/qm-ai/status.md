@@ -1,5 +1,5 @@
 ---
-name: status
+name: qm-ai:status
 description: Display current workflow status and progress
 argument-hint: ""
 allowed-tools:

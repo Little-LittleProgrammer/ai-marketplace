@@ -1,5 +1,5 @@
 ---
-name: start
+name: qm-ai:start
 description: Start the QM-AI workflow with a requirement description or document link
 argument-hint: <requirement description or document URL>
 allowed-tools:

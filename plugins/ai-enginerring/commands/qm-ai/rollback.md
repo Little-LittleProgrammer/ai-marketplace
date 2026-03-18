@@ -1,5 +1,5 @@
 ---
-name: rollback
+name: qm-ai:rollback
 description: Rollback to the previous workflow phase, preserving current outputs
 argument-hint: ""
 allowed-tools:

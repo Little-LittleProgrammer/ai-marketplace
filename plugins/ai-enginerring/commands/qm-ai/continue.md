@@ -1,5 +1,5 @@
 ---
-name: continue
+name: qm-ai:continue
 description: Confirm current phase output and proceed to the next workflow phase
 argument-hint: ""
 allowed-tools:

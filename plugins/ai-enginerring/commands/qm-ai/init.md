@@ -1,5 +1,5 @@
 ---
-name: init
+name: qm-ai:init
 description: Initialize the project by analyzing existing code and generating or updating AGENT.md with project knowledge summary
 argument-hint: ""
 allowed-tools:
