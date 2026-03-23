@@ -1,0 +1,9 @@
+{
+    "name": "quantum-ai-engineering",
+    "version": "0.1.2",
+    "description": "quantum-ai-engineering: QM-AI Workflow plugin for multi-agent requirement-to-delivery process",
+    "author": {
+      "name": "Evan Wu"
+    }
+  }
+  
