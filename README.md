@@ -5,7 +5,7 @@
 ## 特性
 
 - **智能意图路由**: phase-router 分析用户意图并分发到对应的专业 Agent
-- **Multi-Agent 协作**: 9 个专业 Agent 协同工作（路由、需求、设计、任务、开发、测试、沉淀）
+- **Multi-Agent 协作**: 9 个专业 Agent 协同工作（路由、需求、设计、任务、代码协调、前端开发、后端开发、测试、沉淀）
 - **分步确认流程**: 每个阶段输出产物需用户审核确认后进入下一阶段
 - **记忆系统**: AGENT.md + context/知识库，支持持续学习和经验沉淀
 - **断点续传**: SessionEnd Hook 刷新 `.qm-ai/state.json` 的 `updated_at` 并提示未落盘产物，支持中断后恢复
@@ -52,7 +52,10 @@ cc --plugin-dir /path/to/qm-ai-workflow
 # 5. 回滚到上一阶段（保留当前产物）
 /qm-ai:rollback
 
-# 6. 流程优化与知识沉淀（项目完成后使用；与下面等价）
+# 6. 归档已完成需求
+/qm-ai:archive RE-001 用户认证系统
+
+# 7. 流程优化与知识沉淀（项目完成后使用）
 /qm-ai:optimize-flow
 /qm-ai:knowledge
 ```
@@ -65,8 +68,13 @@ cc --plugin-dir /path/to/qm-ai-workflow
 | **架构设计** | DESIGN | design.md | design-manager | /qm-ai:continue |
 | **任务分解** | TASK | task.md | task-decomposer | /qm-ai:continue |
 | **代码开发** | CODING | 源代码 | code-executor | /qm-ai:continue |
-| **测试验证** | TESTING | 测试代码 | test-generator | 自动流转 |
+| **测试验证** | TESTING | 测试代码 | test-generator | /qm-ai:continue |
 | **知识沉淀** | COMPLETE | AGENT.md 更新 | experience-depositor | /qm-ai:knowledge 或 /qm-ai:optimize-flow |
+
+**阶段流转说明**:
+- 每个阶段完成后使用 `/qm-ai:continue` 进入下一阶段
+- TESTING 完成后 `/qm-ai:continue` 会自动路由到 experience-depositor 进入 COMPLETE 阶段
+- 任何阶段都可以通过 `/qm-ai:rollback` 回退到上一阶段
 
 ## 数据存储结构
 
@@ -108,7 +116,7 @@ project/
 | **test-generator** | 测试生成和质量保证 | green | Read, Write, Edit, Bash |
 | **experience-depositor** | 经验沉淀和知识管理 | blue | Read, Write, Edit |
 
-### Skills (22 个)
+### Skills (23 个)
 
 #### 需求管理 (4 个)
 - `req-create` - 创建需求规格文档
@@ -124,6 +132,9 @@ project/
 - `workspace-setup` - 搭建开发环境
 - `design-impl` - 实现设计代码
 - `code-commit` - 处理代码提交
+
+#### 状态管理 (1 个)
+- `state-management` - 工作流状态更新规范
 
 #### 记忆系统 (5 个)
 - `memory-system` - 记忆系统使用指南
@@ -144,7 +155,7 @@ project/
 - `feishu-doc` - 飞书文档下载解析
 - `testing` - 测试生成支持
 
-### Commands (6 个)
+### Commands (8 个)
 
 | 命令 | 功能 | 参数 |
 |------|------|------|
@@ -153,7 +164,9 @@ project/
 | `/qm-ai:continue` | 确认当前阶段产物，进入下一阶段 | 无 |
 | `/qm-ai:rollback` | 回滚到上一阶段，保留当前产物 | 无 |
 | `/qm-ai:status` | 查看当前工作流状态和进度 | 无 |
-| `/qm-ai:optimize-flow` | 流程优化：分析工作流历史，沉淀知识 | 无 |
+| `/qm-ai:archive` | 归档已完成需求到历史记录 | `<requirement-id> [name]` |
+| `/qm-ai:knowledge` | 知识沉淀与工作流复盘 | 无 |
+| `/qm-ai:optimize-flow` | 与 **knowledge** 等价：流程优化与知识沉淀 | 无 |
 
 ## 架构图
 
@@ -182,7 +195,7 @@ project/
 用户 → phase-router (意图识别)
          │
          ├─→ requirement-manager → spec.md
-         │        └─→ req-create, req-change
+         │        └─→ req-create, req-change, req-change
          │
          ├─→ design-manager → design.md
          │        └─→ design-create, design-change
@@ -190,10 +203,12 @@ project/
          ├─→ task-decomposer → task.md
          │
          ├─→ code-executor → 源代码
-         │        ├─→ frontend-coder
-         │        └─→ backend-coder
+         │        ├─→ workspace-setup (环境准备)
+         │        ├─→ frontend-coder (独立/并行)
+         │        └─→ backend-coder (独立/并行)
          │
          ├─→ test-generator → 测试代码
+         │        └─→ testing
          │
          └─→ experience-depositor → AGENT.md 更新
                   └─→ experience-index, index-manage, ...
@@ -213,8 +228,23 @@ project/
 ### 3. 阶段确认
 - 每个阶段产物需仔细审核后再执行 `/qm-ai:continue`
 - 如不满意当前产物，使用 `/qm-ai:rollback` 重新处理
+- 查看 `/qm-ai:status` 了解当前状态和已完成产物
 
-### 4. 知识沉淀
+### 4. 代码开发协调
+- code-executor 会根据任务类型自动协调 frontend-coder 和 backend-coder
+- 独立任务（纯前端/纯后端）并行执行
+- 依赖任务（前端依赖后端 API）按顺序执行
+
+### 5. 状态管理
+- 各 Agent 负责更新自己阶段的状态到 `.qm-ai/state.json`
+- requirement-manager: ANALYSIS 阶段
+- design-manager: DESIGN 阶段
+- task-decomposer: TASK 阶段
+- code-executor: CODING 阶段
+- test-generator: TESTING 阶段
+- experience-depositor: COMPLETE 阶段
+
+### 6. 知识沉淀
 - 项目完成后执行 `/qm-ai:optimize-flow`
 - 提取可复用模式和最佳实践
 - 更新 AGENT.md 和知识库

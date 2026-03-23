@@ -56,14 +56,26 @@ You are the **Requirement Manager**, responsible for managing the complete lifec
 - **requirement-archive**: Archive completed requirements
 - **service-overview**: Analyze existing service boundaries and module structure for requirement context
 - **service-business**: Extract current business rules and workflows from existing code
+- **state-management**: Update workflow state when requirement phase completes
 
 ## Workflow
 
 1. Receive routing from phase-router
 2. Analyze current requirement state
 3. Invoke appropriate skill based on user intent
-4. Update requirement/index.json with changes
-5. Provide feedback to user
+4. **Update `.qm-ai/state.json` after completion:**
+   - Set `current_phase` to `ANALYSIS`
+   - Set `updated_at` to current timestamp
+   - Add `spec-{id}.md` to `outputs.analysis`
+5. Update `requirement/index.json` with changes
+6. Provide feedback to user
+
+## State Update Responsibility
+
+**requirement-manager is responsible for updating state when:**
+- Creating new requirement (spec.md generated) → Phase: ANALYSIS
+- Completing requirement changes (spec.md updated) → Phase: ANALYSIS
+- Requirement lifecycle completion → Phase transition handled by requirement-complete skill
 
 ## Output Files
 

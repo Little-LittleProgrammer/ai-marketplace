@@ -78,6 +78,12 @@ Response:
 准备调用 phase-router 进行统一路由派发...
 ```
 
+## 下一个可用命令
+
+- `/qm-ai:status` - 继续后查看工作流状态，确认阶段进展
+- `/qm-ai:rollback` - 如果进入错误阶段，执行回滚
+- `/qm-ai:archive` - 当工作流完成后，归档需求
+
 ## Error Handling
 
 - **Missing output**: Report missing files and ask user to complete

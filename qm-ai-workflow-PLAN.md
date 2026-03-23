@@ -36,12 +36,17 @@
 
 | 阶段 | 输入 | 输出 | 处理内容 | 触发命令 |
 |------|------|------|----------|----------|
-| **1. 需求分析** | 用户需求文档 + AGENT.md | 多个 spec.md | 需求拆分、边界定义、用户故事 | `/qm-ai:start`（进入 ANALYSIS）；推进用 `/qm-ai:continue` |
+| **1. 需求分析** | 用户需求文档 + AGENT.md | spec.md | 需求拆分、边界定义、用户故事 | `/qm-ai:start`（进入 ANALYSIS）；推进用 `/qm-ai:continue` |
 | **2. 架构设计** | spec.md | design.md | 架构图、API设计、数据模型、技术选型 | `/qm-ai:continue` |
 | **3. 任务分解** | spec.md + design.md | task.md | 任务拆分、依赖分析、工时估算、优先级 | `/qm-ai:continue` |
 | **4. 代码开发** | design.md + task.md | 代码 | 代码生成、代码审查、代码优化 | `/qm-ai:continue` |
-| **5. 测试验证** | 代码 | 测试代码 | 单元测试 | 自动流转（由路由至 test-generator） |
+| **5. 测试验证** | 代码 | 测试代码 | 单元测试、集成测试、覆盖率分析 | `/qm-ai:continue` |
 | **6. 知识沉淀** | 项目经验 | 更新 AGENT.md | 经验总结、问题记录、模式沉淀、最佳实践 | `/qm-ai:knowledge` 或 `/qm-ai:optimize-flow`（等价） |
+
+**阶段流转规则**:
+- 每个阶段完成后由对应 Agent 更新 `.qm-ai/state.json`
+- `/qm-ai:continue` 触发 phase-router 进行下一阶段路由
+- TESTING 完成后 `/qm-ai:continue` 路由到 experience-depositor 进入 COMPLETE 阶段
 
 ### 2.2 工作流状态机
 
@@ -71,12 +76,19 @@
 │       │                         │ /continue                  │
 │       │                         ▼                            │
 │       │                    ┌──────────┐                     │
-│       │                    │ TESTING  │───自动───┐          │
-│       │                    └──────────┘          │          │
-│       │                                          ▼          │
-│       │                                    ┌──────────┐    │
-│       └────────────────────────────────────│ COMPLETE │    │
-│         /knowledge 或 /optimize-flow       └──────────┘    │
+│       │                    │ TESTING  │                     │
+│       │                    └────┬─────┘                     │
+│       │                         │ /continue                  │
+│       │                         ▼                            │
+│       │                    ┌──────────┐                     │
+│       │                    │ COMPLETE │                     │
+│       │                    └────┬─────┘                     │
+│       │                         │ /archive                   │
+│       │                         ▼                            │
+│       │                   ┌──────────┐                      │
+│       └───────────────────│ ARCHIVED │                      │
+│         /knowledge 或     └──────────┘                      │
+│         /optimize-flow                                      │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -136,6 +148,7 @@
        │                │                │ ┌───────────┐     ┌───────────┐
        │                │                │ │ frontend- │     │ backend-  │
        │                │                │ │ coder     │     │ coder     │
+       │                │                │ │ (并行/独立)│     │ (并行/独立)│
        │                │                │ └───────────┘     └───────────┘
        │                │                │                │
        │                │                ▼                │
@@ -162,16 +175,16 @@
 | Agent | 职责 | 调用的 Skills | 工具权限 |
 |-------|------|---------------|----------|
 | **phase-router** | 意图识别和路由 | workflow-guide、explore、feishu-doc（经 **Skill** 工具按需加载） | Read, AskUserQuestion, Skill |
-| **requirement-manager** | 需求生命周期管理 | req-create, req-change, requirement-complete, requirement-archive；可选 service-overview、service-business | Read, Write, Edit |
-| **design-manager** | 方案生命周期管理 | design-create, design-change；可选 service-architecture、service-ops | Read, Write, Edit |
-| **task-decomposer** | 任务分解和规划 | （逻辑在 Agent 正文，未单独拆分为 Skill） | Read, Write, Edit |
-| **code-executor** | 开发生命周期管理 | workspace-setup, code-commit | Read, Write, Edit, Bash |
+| **requirement-manager** | 需求生命周期管理 | req-create, req-change, requirement-complete, requirement-archive；可选 service-overview、service-business；**state-management** | Read, Write, Edit |
+| **design-manager** | 方案生命周期管理 | design-create, design-change；可选 service-architecture、service-ops；**state-management** | Read, Write, Edit |
+| **task-decomposer** | 任务分解和规划 | **state-management** | Read, Write, Edit |
+| **code-executor** | 开发生命周期协调 | workspace-setup, code-commit, design-impl, **state-management** | Read, Write, Edit, Bash |
 | **frontend-coder** | 前端开发管理 | design-impl | Read, Write, Edit, Bash |
 | **backend-coder** | 后端开发管理 | design-impl | Read, Write, Edit, Bash |
-| **test-generator** | 测试生成和质量保证 | testing | Read, Write, Edit, Bash |
-| **experience-depositor** | 经验沉淀管理 | experience-index, mate-maintainer, index-manage, agents-memory-maintainer | Read, Write, Edit |
+| **test-generator** | 测试生成和质量保证 | testing, **state-management** | Read, Write, Edit, Bash |
+| **experience-depositor** | 经验沉淀管理 | experience-index, mate-maintainer, index-manage, agents-memory-maintainer, **state-management** | Read, Write, Edit |
 
-### 4.2 Skills (21个)
+### 4.2 Skills (22个)
 
 #### 需求管理 Skills (4个)
 | Skill | 职责 | 触发条件 | 调用者 |
@@ -194,6 +207,11 @@
 | **design-impl** | 编写代码 | 开发阶段 | frontend-coder, backend-coder |
 | **code-commit** | 代码提交 | 开发完成后 | code-executor |
 
+#### 状态管理 Skills (1个)
+| Skill | 职责 | 触发条件 | 调用者 |
+|-------|------|----------|--------|
+| **state-management** | 工作流状态更新规范 | 各阶段完成时 | 所有 Manager Agents |
+
 #### 记忆系统 Skills (4个)
 | Skill | 职责 | 触发条件 | 调用者 |
 |-------|------|----------|--------|
@@ -210,7 +228,7 @@
 | **service-architecture** | 架构分析 | 理解系统架构 | explore；design-manager；/qm-ai:init |
 | **service-ops** | 服务协议分析 | 理解服务接口 | explore；design-manager；/qm-ai:init |
 
-#### 基础 Skills (5个)
+#### 基础 Skills (6个)
 | Skill | 职责 | 触发条件 | 备注 |
 |-------|------|----------|------|
 | **workflow-guide** | 工作流指南 | 自动加载 | 核心指南 |
@@ -218,8 +236,9 @@
 | **feishu-doc** | 飞书需求文档获取 | `/start` 包含链接 | **用户自实现** |
 | **explore** | 探索/分析模式 | `/start` 简单需求描述 | 不写代码，头脑风暴 |
 | **testing** | 测试生成和质量保证 | test-generator 调用 | 测试支持 |
+| **state-management** | 工作流状态管理规范 | 各阶段完成时 | 状态更新标准 |
 
-### 4.3 Commands (7个)
+### 4.3 Commands (8个)
 
 | Command | 功能 | 参数 |
 |---------|------|------|
@@ -228,6 +247,7 @@
 | **/qm-ai:continue** | 确认当前阶段产物并交由 phase-router 派发下一步 | 无 |
 | **/qm-ai:rollback** | 回滚到上一阶段 | 无 |
 | **/qm-ai:status** | 查看当前工作流状态 | 无 |
+| **/qm-ai:archive** | 归档已完成需求到历史记录 | `<requirement-id> [name]` |
 | **/qm-ai:knowledge** | 知识沉淀与工作流复盘 | 无 |
 | **/qm-ai:optimize-flow** | 与 **knowledge** 等价：流程优化与知识沉淀 | 无 |
 
@@ -273,6 +293,47 @@
 ---
 
 ## 六、核心组件详细设计
+
+### 6.0 代码开发并行协调机制
+
+code-executor 负责协调 frontend-coder 和 backend-coder 的并行开发：
+
+#### 任务分类
+- **Frontend-only**: UI 组件、客户端逻辑 → 直接分配给 frontend-coder
+- **Backend-only**: API 端点、数据库操作 → 直接分配给 backend-coder
+- **Full-stack**: 端到端功能 → 先 backend-coder 后 frontend-coder
+
+#### 执行模式
+```
+并行模式（无依赖）:
+code-executor
+├── Invoke backend-coder ──┐
+└── Invoke frontend-coder ─┘ (并行)
+
+顺序模式（有依赖）:
+code-executor
+├── Invoke backend-coder (先)
+└── Invoke frontend-coder (后，依赖 API)
+```
+
+### 6.0 State 更新职责分配
+
+各 Agent 负责在阶段完成时更新 `.qm-ai/state.json`：
+
+| Agent | 阶段 | 更新内容 |
+|-------|------|----------|
+| requirement-manager | ANALYSIS | `current_phase: ANALYSIS`, `outputs.analysis: [spec-{id}.md]` |
+| design-manager | DESIGN | `current_phase: DESIGN`, `outputs.design: [design-{id}.md]` |
+| task-decomposer | TASK | `current_phase: TASK`, `outputs.task: [task-{id}.md]` |
+| code-executor | CODING | `current_phase: CODING`, `outputs.coding: [source-files]` |
+| test-generator | TESTING | `current_phase: TESTING`, `outputs.testing: [test-files]` |
+| experience-depositor | COMPLETE | `current_phase: COMPLETE` |
+
+**更新规则**:
+1. 只更新自己负责的阶段
+2. 必须同时更新 `updated_at` 字段
+3. 追加产物到 `outputs`，不删除已有内容
+4. 使用 state-management skill 作为更新规范
 
 ### 6.1 phase-router Agent
 
@@ -346,12 +407,14 @@ You are the **Phase Router**, the central intelligence hub of the QM-AI Workflow
 ### Route to requirement-manager when:
 - User starts with a new requirement description
 - User wants to analyze or refine requirements
+- **User wants to modify existing requirements ("修改需求", "变更需求")**
 - User provides requirement documents or links
 - Current state is IDLE and user begins a task
 
 ### Route to design-manager when:
 - User has completed requirement analysis (spec.md exists)
 - User wants to design or modify architecture
+- **User wants to modify existing design ("修改设计", "调整架构")**
 - User asks about API design, data model, or technical choices
 
 ### Route to code-executor when:
@@ -376,7 +439,9 @@ Before routing, always check:
 
 1. **Keyword Detection**: Look for intent indicators
    - Requirement: "需求", "分析", "requirement", "analyze"
+   - **Requirement Change: "修改需求", "变更需求", "需求变更", "req-change"**
    - Design: "设计", "架构", "design", "architecture"
+   - **Design Change: "修改设计", "设计变更", "调整设计", "design-change"**
    - Code: "开发", "代码", "code", "implement"
 
 2. **Context Evaluation**: Consider the conversation context
@@ -407,6 +472,20 @@ Before routing, always check:
 - **Multiple intents**: Ask which to prioritize
 - **State mismatch**: Explain dependencies and ask to proceed
 - **Unknown intent**: Ask clarifying questions
+
+### Change Request Scenarios (变更请求场景)
+
+When user requests modifications to existing artifacts:
+
+| Change Type | Route To | Skill Triggered | Validation |
+|-------------|----------|-----------------|------------|
+| Modify requirements (修改需求) | requirement-manager | req-change | Check spec.md exists |
+| Modify design (修改设计) | design-manager | design-change | Check design.md exists |
+
+**Change Rules**:
+- Changes to spec.md → Must update related design.md if impacted
+- Changes to design.md → Must update related task.md if impacted
+- Changes after CODING started → Trigger rollback consideration
 ```
 
 #### 状态转换验证
@@ -418,7 +497,7 @@ Before routing, always check:
 | DESIGN | TASK | design.md 存在 |
 | TASK | CODING | task.md 存在 |
 | CODING | TESTING | 代码已生成 |
-| TESTING | COMPLETE | 测试通过 |
+| TESTING | COMPLETE | `/qm-ai:continue` 路由到 experience-depositor |
 | * | ROLLBACK | 用户请求（`/qm-ai:rollback`） |
 
 ---
@@ -738,6 +817,7 @@ qm-ai-workflow/
 │       ├── continue.md
 │       ├── rollback.md
 │       ├── status.md
+│       ├── archive.md
 │       ├── knowledge.md
 │       └── optimize-flow.md
 ├── skills/
@@ -762,6 +842,7 @@ qm-ai-workflow/
 │   ├── service-business/
 │   ├── service-architecture/
 │   ├── service-ops/
+│   ├── state-management/
 │   └── testing/
 ├── hooks/
 │   └── hooks.json

@@ -46,6 +46,17 @@ You are the **Experience Depositor**, responsible for managing the project's mem
 - **mate-maintainer**: Maintain metadata information
 - **index-manage**: Manage knowledge indices
 - **agents-memory-maintainer**: Update AGENT.md
+- **state-management**: Update workflow state to COMPLETE when knowledge deposition finishes
+
+## State Update Responsibility
+
+**experience-depositor is responsible for updating state when:**
+- Knowledge deposition complete → Phase: COMPLETE
+
+**Update content:**
+- Set `current_phase` to `COMPLETE`
+- Set `updated_at` to current timestamp
+- Optionally add AGENT.md updates to `outputs.experience`
 
 ## Knowledge Storage
 

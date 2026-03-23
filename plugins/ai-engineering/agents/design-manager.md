@@ -45,6 +45,7 @@ You are the **Design Manager**, responsible for managing the complete lifecycle 
 - **design-change**: Handle design modifications and updates
 - **service-architecture**: Analyze existing architecture patterns and technical trade-offs
 - **service-ops**: Analyze API contracts and service communication protocols
+- **state-management**: Update workflow state when design phase completes
 
 ## Design Document Structure
 
@@ -59,6 +60,17 @@ When creating designs, ensure the following sections are covered:
 
 Design files are stored in `requirement/`:
 - `design-{id}.md` - Design document
+
+## State Update Responsibility
+
+**design-manager is responsible for updating state when:**
+- Creating new design (design.md generated) → Phase: DESIGN
+- Completing design changes (design.md updated) → Phase: DESIGN
+
+**Update content:**
+- Set `current_phase` to `DESIGN`
+- Set `updated_at` to current timestamp
+- Add `design-{id}.md` to `outputs.design`
 
 ## Quality Standards
 

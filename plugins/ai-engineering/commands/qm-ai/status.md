@@ -69,6 +69,13 @@ Response:
 完成设计文档后使用 /qm-ai:continue 进入任务分解阶段
 ```
 
+## 下一个可用命令
+
+- `/qm-ai:continue` - 确认当前阶段产物完整后，进入下一阶段
+- `/qm-ai:rollback` - 如果当前阶段有问题，回滚到上一阶段
+- `/qm-ai:archive` - 需求已完成时，归档到历史记录
+- `/qm-ai:knowledge` 或 `/qm-ai:optimize-flow` - 进行知识沉淀与流程复盘
+
 ## Error Handling
 
 - **No active workflow**: Inform user to use /qm-ai:start

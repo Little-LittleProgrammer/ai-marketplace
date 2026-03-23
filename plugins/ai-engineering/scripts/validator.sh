@@ -172,6 +172,167 @@ check_skills() {
     echo "Total skills: $skill_count"
 }
 
+# Check workflow state consistency
+check_workflow_state() {
+    echo "=== Checking Workflow State ==="
+
+    # Check state file structure
+    if [ -f "$PLUGIN_DIR/../.qm-ai/state.json" ]; then
+        success "state.json exists"
+
+        # Validate state.json structure
+        if python3 -c "
+import json
+import sys
+
+required_keys = ['current_phase', 'updated_at']
+optional_keys = ['started_at', 'requirement_id', 'requirement_path', 'outputs', 'rollback_history']
+
+try:
+    with open('$PLUGIN_DIR/../.qm-ai/state.json') as f:
+        data = json.load(f)
+
+    missing = [k for k in required_keys if k not in data]
+    if missing:
+        print(f'Missing required keys: {missing}')
+        sys.exit(1)
+
+    # Validate phase values
+    valid_phases = ['IDLE', 'ANALYSIS', 'DESIGN', 'TASK', 'CODING', 'TESTING', 'COMPLETE']
+    if data['current_phase'] not in valid_phases:
+        print(f'Invalid phase: {data[\"current_phase\"]}')
+        sys.exit(1)
+
+    print('state.json structure valid')
+except Exception as e:
+    print(f'Error: {e}')
+    sys.exit(1)
+" 2>/dev/null; then
+            success "state.json has valid structure"
+        else
+            error "state.json has invalid structure"
+        fi
+    else
+        warning "state.json not found (may not be initialized yet)"
+    fi
+}
+
+# Check agent references
+check_agent_references() {
+    echo "=== Checking Agent References ==="
+
+    # Check if phase-router references all required agents
+    local phase_router="$PLUGIN_DIR/agents/phase-router.md"
+    if [ -f "$phase_router" ]; then
+        local required_agents=("requirement-manager" "design-manager" "task-decomposer" "code-executor" "test-generator" "experience-depositor")
+        local all_found=true
+
+        for agent in "${required_agents[@]}"; do
+            if grep -q "$agent" "$phase_router"; then
+                success "phase-router references $agent"
+            else
+                warning "phase-router may not reference $agent"
+                all_found=false
+            fi
+        done
+    fi
+}
+
+# Check command allowed-tools
+check_command_tools() {
+    echo "=== Checking Command Allowed Tools ==="
+
+    while IFS= read -r -d '' file; do
+        local rel="${file#"$PLUGIN_DIR"/}"
+
+        # Check if allowed-tools exists
+        if grep -q "allowed-tools:" "$file"; then
+            success "$rel has allowed-tools"
+        else
+            warning "$rel missing allowed-tools (will inherit default tools)"
+        fi
+
+        # Check if Agent tool is in allowed-tools when Agent is used
+        if grep -q "Invoke:" "$file" || grep -q "Agent:" "$file"; then
+            if grep -q "allowed-tools:" "$file" && ! grep -A5 "allowed-tools:" "$file" | grep -q "Agent"; then
+                error "$rel invokes Agent but Agent not in allowed-tools"
+            fi
+        fi
+    done < <(find "$PLUGIN_DIR/commands" -name "*.md" -type f -print0 2>/dev/null)
+}
+
+# Check skill references
+check_skill_references() {
+    echo "=== Checking Skill References ==="
+
+    # Check if agents reference valid skills
+    for agent_file in "$PLUGIN_DIR/agents"/*.md; do
+        if [ -f "$agent_file" ]; then
+            local basename=$(basename "$agent_file")
+
+            # Extract skills mentioned
+            grep -oE '\*\*[a-z-]+\*\*' "$agent_file" | tr -d '*' | while read -r skill; do
+                if [ -d "$PLUGIN_DIR/skills/$skill" ]; then
+                    success "$basename references valid skill: $skill"
+                else
+                    # Check if it's a skill name without directory
+                    if [ "$skill" != "skill" ] && [ "$skill" != "skills" ]; then
+                        warning "$basename references skill '$skill' - verify it exists"
+                    fi
+                fi
+            done
+        fi
+    done
+}
+
+# Check hooks configuration
+check_hooks() {
+    echo "=== Checking Hooks ==="
+
+    local hooks_file="$PLUGIN_DIR/hooks/hooks.json"
+    if [ -f "$hooks_file" ]; then
+        success "hooks.json exists"
+
+        # Validate JSON
+        if python3 -c "import json; json.load(open('$hooks_file'))" 2>/dev/null; then
+            success "hooks.json is valid JSON"
+        else
+            error "hooks.json is not valid JSON"
+        fi
+
+        # Check if SessionEnd hook exists
+        if grep -q "SessionEnd" "$hooks_file"; then
+            success "SessionEnd hook configured"
+        else
+            warning "SessionEnd hook not found"
+        fi
+    else
+        warning "hooks.json not found"
+    fi
+}
+
+# Check workflow completeness
+check_workflow_completeness() {
+    echo "=== Checking Workflow Completeness ==="
+
+    # Check for required skills
+    local required_skills=("req-create" "design-create" "design-impl" "testing" "memory-system" "code-commit" "workspace-setup")
+    for skill in "${required_skills[@]}"; do
+        if [ -d "$PLUGIN_DIR/skills/$skill" ]; then
+            success "Required skill exists: $skill"
+        else
+            error "Required skill missing: $skill"
+        fi
+    done
+
+    # Check for new state-management skill
+    if [ -d "$PLUGIN_DIR/skills/state-management" ]; then
+        success "state-management skill exists (for state updates)"
+    else
+        warning "state-management skill not found (recommended for state updates)"
+    fi
+}
+
 # Main
 echo "QM-AI Workflow Plugin Validator"
 echo "================================"
@@ -190,6 +351,24 @@ check_commands
 echo ""
 
 check_skills
+echo ""
+
+check_workflow_state
+echo ""
+
+check_agent_references
+echo ""
+
+check_command_tools
+echo ""
+
+check_skill_references
+echo ""
+
+check_hooks
+echo ""
+
+check_workflow_completeness
 echo ""
 
 # Summary

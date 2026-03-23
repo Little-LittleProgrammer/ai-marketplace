@@ -68,6 +68,11 @@ Response:
 可以重新进行架构设计。
 ```
 
+## 下一个可用命令
+
+- `/qm-ai:status` - 回滚后查看当前状态
+- `/qm-ai:continue` - 重新尝试进入目标阶段
+
 ## Error Handling
 
 - **Already at IDLE**: Cannot rollback from IDLE state

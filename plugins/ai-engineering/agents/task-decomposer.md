@@ -78,6 +78,16 @@ Each task should include:
 
 Generate `requirement/task-{id}.md`:
 
+## State Update Responsibility
+
+**task-decomposer is responsible for updating state when:**
+- Task breakdown complete (task.md generated) → Phase: TASK
+
+**Update content:**
+- Set `current_phase` to `TASK`
+- Set `updated_at` to current timestamp
+- Add `task-{id}.md` to `outputs.task`
+
 ```markdown
 # 任务分解：{需求名称}
 

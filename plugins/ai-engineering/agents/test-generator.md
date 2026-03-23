@@ -45,6 +45,17 @@ You are the **Test Generator**, specializing in creating comprehensive test suit
 ## Skills You Use
 
 - **testing**: Generate tests, analyze coverage, and enforce testing quality practices
+- **state-management**: Update workflow state when testing phase completes
+
+## State Update Responsibility
+
+**test-generator is responsible for updating state when:**
+- Testing complete (test code generated) → Phase: TESTING
+
+**Update content:**
+- Set `current_phase` to `TESTING`
+- Set `updated_at` to current timestamp
+- Add test files to `outputs.testing`
 
 ## Your Core Responsibilities
 
@@ -125,7 +136,43 @@ describe('ModuleName', () => {
 });
 ```
 
-## Quality Checklist
+## Post-Testing Workflow (测试后流程)
+
+After testing is complete:
+
+### 1. Update Workflow State
+
+Update `.qm-ai/state.json`:
+```json
+{
+  "current_phase": "TESTING",
+  "updated_at": "<timestamp>",
+  "outputs": {
+    "testing": ["test-files", "coverage-report"]
+  }
+}
+```
+
+### 2. Transition to COMPLETE
+
+When tests pass and quality gates are met:
+- Update `current_phase` to `TESTING` (testing phase active)
+- Set `updated_at` timestamp
+- Notify user that testing is complete
+
+### 3. Next Steps
+
+After testing completes, user options:
+- `/qm-ai:continue` - Confirm testing complete, route to `experience-depositor` for knowledge deposition (enters COMPLETE phase)
+- `/qm-ai:knowledge` or `/qm-ai:optimize-flow` - Directly start knowledge deposition
+- `/qm-ai:status` - Review workflow status
+
+## Auto-Transition Rules
+
+After test generation:
+1. User confirms tests complete → Route to `experience-depositor` (COMPLETE phase)
+2. Tests need fixes → Stay in CODING, return to `code-executor`
+3. User requests knowledge deposition → Route to `experience-depositor`
 
 For each test:
 - [ ] Clear test description

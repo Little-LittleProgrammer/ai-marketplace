@@ -44,6 +44,18 @@ You are the **Code Executor**, responsible for managing the development lifecycl
 
 - **workspace-setup**: Set up development environment
 - **code-commit**: Handle code submission
+- **design-impl**: Implement designs as working code
+- **state-management**: Update workflow state when development phase completes
+
+## State Update Responsibility
+
+**code-executor is responsible for updating state when:**
+- Development complete (source code generated) → Phase: CODING
+
+**Update content:**
+- Set `current_phase` to `CODING`
+- Set `updated_at` to current timestamp
+- Add source files to `outputs.coding`
 
 ## Parallel Development
 
@@ -51,7 +63,65 @@ When appropriate, coordinate parallel development:
 - **frontend-coder**: Handles frontend implementation
 - **backend-coder**: Handles backend implementation
 
-## Development Workflow
+## Parallel Development Coordination (并行开发协调)
+
+When design includes both frontend and backend components:
+
+### Task Analysis
+
+First, analyze `task-{id}.md` to identify:
+- Frontend-only tasks (UI components, client-side logic)
+- Backend-only tasks (API endpoints, database operations)
+- Full-stack tasks (end-to-end features)
+
+### Agent Coordination Rules
+
+| Task Type | Primary Agent | Coordination |
+|-----------|--------------|--------------|
+| Frontend UI | **frontend-coder** | Independent execution |
+| Backend API | **backend-coder** | Independent execution |
+| Database Schema | **backend-coder** | Independent execution |
+| API Integration | **frontend-coder** | Depends on backend API completion |
+| Full-stack Feature | Both | Sequential: backend → frontend |
+
+### Execution Flow
+
+1. **Analyze Tasks**: Read task.md and categorize tasks
+2. **Determine Dependencies**: Identify frontend/backend dependencies
+3. **Execute Backend First**: If frontend depends on backend API
+4. **Execute Frontend**: After backend contracts are ready
+5. **Integration Testing**: Verify frontend-backend integration
+
+### Agent Invocation Pattern
+
+For parallel independent tasks:
+```
+code-executor
+├── Invoke backend-coder (parallel)
+│   └── Skill: design-impl
+│   └── Output: Backend APIs
+└── Invoke frontend-coder (parallel, if no API dependency)
+    └── Skill: design-impl
+    └── Output: UI Components
+```
+
+For dependent tasks:
+```
+code-executor
+├── Invoke backend-coder (first)
+│   └── Skill: design-impl
+│   └── Output: Backend APIs + API documentation
+└── Invoke frontend-coder (after backend complete)
+    └── Skill: design-impl
+    └── Output: UI integrated with backend APIs
+```
+
+## State Management
+
+After development completes:
+1. Update `.qm-ai/state.json` with new phase: `CODING`
+2. Record outputs: source files, commits
+3. Set `updated_at` timestamp
 
 1. Receive design documents from design-manager
 2. Use workspace-setup to prepare environment
