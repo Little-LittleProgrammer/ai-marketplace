@@ -42,6 +42,13 @@ Confirm current phase outputs and hand off routing decision.
    - Provide current phase and available outputs as routing context
    - Let `phase-router` decide which specific agent and skill should execute next
 
+5. **Phase field after dispatch (mandatory convention)**
+   - After `phase-router` routes to a specialist agent, that agent (or the same turn’s follow-up work) must **update `.qm-ai/state.json`** when the workflow **actually advances** to a new stage:
+     - Set `current_phase` to the phase being entered (e.g. after spec is accepted and design starts → `DESIGN`; after design → `TASK`; after task.md → `CODING`; after implementation → `TESTING`; after tests → `COMPLETE` as appropriate).
+     - Set `updated_at` to current ISO-8601 UTC time.
+     - Append or merge known output files under `outputs` for traceability.
+   - `/qm-ai:continue` itself does **not** guess the next phase; it only validates, merges outputs if needed, and invokes `phase-router`.
+
 ## Routing Principle
 
 - Do not define fixed phase transitions in `/continue`

@@ -1,6 +1,7 @@
 #!/bin/bash
 # State Manager Script
-# Manages workflow state file operations
+# Manages workflow state file operations (manual / advanced use).
+# SessionEnd persistence of `updated_at` is handled by scripts/session-end-persist.sh via hooks/hooks.json.
 
 set -e
 

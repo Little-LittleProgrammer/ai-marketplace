@@ -38,6 +38,12 @@ check_required_files() {
         error "plugin.json not found"
     fi
 
+    if [ -x "$PLUGIN_DIR/scripts/session-end-persist.sh" ]; then
+        success "session-end-persist.sh exists and is executable"
+    else
+        warning "session-end-persist.sh missing or not executable (SessionEnd hook)"
+    fi
+
     if [ -d "$PLUGIN_DIR/agents" ]; then
         success "agents/ directory exists"
     else
@@ -119,24 +125,20 @@ check_agents() {
     echo "Total agents: $agent_count"
 }
 
-# Check command files
+# Check command files (supports commands/**/*.md e.g. commands/qm-ai/*.md)
 check_commands() {
     echo "=== Checking Commands ==="
 
     local cmd_count=0
-    for file in "$PLUGIN_DIR/commands"/*.md; do
-        if [ -f "$file" ]; then
-            cmd_count=$((cmd_count + 1))
-            local basename=$(basename "$file")
-
-            # Check frontmatter
-            if head -1 "$file" | grep -q "^---"; then
-                success "$basename has frontmatter"
-            else
-                error "$basename missing frontmatter"
-            fi
+    while IFS= read -r -d '' file; do
+        cmd_count=$((cmd_count + 1))
+        local rel="${file#"$PLUGIN_DIR"/}"
+        if head -1 "$file" | grep -q "^---"; then
+            success "$rel has frontmatter"
+        else
+            error "$rel missing frontmatter"
         fi
-    done
+    done < <(find "$PLUGIN_DIR/commands" -name "*.md" -type f -print0 2>/dev/null)
 
     echo "Total commands: $cmd_count"
 }

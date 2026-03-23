@@ -47,6 +47,7 @@ Display current workflow status and progress.
 ### 可用命令
 - /qm-ai:continue - 进入下一阶段
 - /qm-ai:rollback - 回滚到上一阶段
+- /qm-ai:knowledge 或 /qm-ai:optimize-flow - 知识沉淀与流程复盘（等价）
 ```
 
 ## Example Usage

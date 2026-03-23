@@ -14,6 +14,8 @@ allowed-tools:
 
 Analyze completed workflows to extract learnings, optimize processes, and update the knowledge base.
 
+**别名**：与 **`/qm-ai:knowledge`** 等价，任选其一即可。
+
 ## Instructions
 
 ### 0. Skill Routing 

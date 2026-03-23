@@ -8,7 +8,7 @@
 - **Multi-Agent 协作**: 9 个专业 Agent 协同工作（路由、需求、设计、任务、开发、测试、沉淀）
 - **分步确认流程**: 每个阶段输出产物需用户审核确认后进入下一阶段
 - **记忆系统**: AGENT.md + context/知识库，支持持续学习和经验沉淀
-- **断点续传**: SessionEnd Hook 保存进度，支持中断后恢复
+- **断点续传**: SessionEnd Hook 刷新 `.qm-ai/state.json` 的 `updated_at` 并提示未落盘产物，支持中断后恢复
 - **阶段回滚**: 支持回退到上一阶段重新处理，保留当前产物
 
 ## 安装
@@ -52,8 +52,9 @@ cc --plugin-dir /path/to/qm-ai-workflow
 # 5. 回滚到上一阶段（保留当前产物）
 /qm-ai:rollback
 
-# 6. 流程优化与知识沉淀（项目完成后使用）
+# 6. 流程优化与知识沉淀（项目完成后使用；与下面等价）
 /qm-ai:optimize-flow
+/qm-ai:knowledge
 ```
 
 ## 工作流阶段
@@ -65,7 +66,7 @@ cc --plugin-dir /path/to/qm-ai-workflow
 | **任务分解** | TASK | task.md | task-decomposer | /qm-ai:continue |
 | **代码开发** | CODING | 源代码 | code-executor | /qm-ai:continue |
 | **测试验证** | TESTING | 测试代码 | test-generator | 自动流转 |
-| **知识沉淀** | COMPLETE | AGENT.md 更新 | experience-depositor | /qm-ai:optimize-flow |
+| **知识沉淀** | COMPLETE | AGENT.md 更新 | experience-depositor | /qm-ai:knowledge 或 /qm-ai:optimize-flow |
 
 ## 数据存储结构
 
@@ -97,7 +98,7 @@ project/
 
 | Agent | 职责 | 颜色 | 工具权限 |
 |-------|------|------|----------|
-| **phase-router** | 意图识别和路由中枢 | cyan | Read, AskUserQuestion |
+| **phase-router** | 意图识别和路由中枢 | cyan | Read, AskUserQuestion, Skill |
 | **requirement-manager** | 需求生命周期管理 | blue | Read, Write, Edit |
 | **design-manager** | 设计/架构生命周期管理 | green | Read, Write, Edit |
 | **task-decomposer** | 任务分解和规划 | yellow | Read, Write, Edit |
