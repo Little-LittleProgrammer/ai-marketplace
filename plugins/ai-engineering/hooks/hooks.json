@@ -1,0 +1,20 @@
+{
+	"description": "QM-AI workflow: persist state timestamp on session end and remind about unsaved outputs",
+	"hooks": {
+		"SessionEnd": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/session-end-persist.sh\"",
+						"timeout": 30
+					},
+					{
+						"type": "prompt",
+						"prompt": "The workflow state file .qm-ai/state.json should have been refreshed on disk (updated_at). If it does not exist yet, no action needed. Remind the user if critical phase outputs (spec/design/task) were mentioned in this session but may not be saved to requirement/. Suggest running /qm-ai:status next session."
+					}
+				]
+			}
+		]
+	}
+}
