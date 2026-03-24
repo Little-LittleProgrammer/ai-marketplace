@@ -1,6 +1,6 @@
 ---
 name: memory-system
-description: This skill should be used when the user asks about "记忆系统", "AGENT.md", "知识库", "memory", "knowledge base", or needs to understand how to use or update the project's knowledge storage.
+description: This skill should be used when the user asks about "记忆系统", "AGENTS.md", "知识库", "memory", "knowledge base", or needs to understand how to use or update the project's knowledge storage.
 version: 0.1.0
 ---
 
@@ -9,14 +9,14 @@ version: 0.1.0
 ## 概述
 
 QM-AI Workflow 的记忆系统用于存储和检索项目知识，包括：
-- **全局知识**: `AGENT.md` - 项目入口文件
+- **全局知识**: `AGENTS.md` - 项目入口文件
 - **局部知识**: `context/` - 分类知识库
 
 ## 存储结构
 
 ```
 项目根目录/
-├── AGENT.md                    # 项目入口，全局知识
+├── AGENTS.md                    # 项目入口，全局知识
 ├── context/                    # 知识库
 │   ├── index.json             # 知识库索引
 │   ├── index.md               # 知识库索引（可读）
@@ -27,7 +27,7 @@ QM-AI Workflow 的记忆系统用于存储和检索项目知识，包括：
 │   └── problems/              # 问题解决方案
 ```
 
-## AGENT.md 格式
+## AGENTS.md 格式
 
 ```markdown
 # 项目名称
@@ -83,7 +83,7 @@ Architecture Decision Records (ADR)。
 ### 读取知识
 
 1. **读取全局知识**:
-   - 读取 `AGENT.md` 获取项目概述
+   - 读取 `AGENTS.md` 获取项目概述
 
 2. **搜索局部知识**:
    - 读取 `context/index.json` 获取索引
@@ -91,7 +91,7 @@ Architecture Decision Records (ADR)。
 
 ### 更新知识
 
-1. **更新 AGENT.md**:
+1. **更新 AGENTS.md**:
    - 使用 agents-memory-maintainer skill
 
 2. **添加新知识**:

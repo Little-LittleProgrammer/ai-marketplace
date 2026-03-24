@@ -1,16 +1,16 @@
 ---
 name: agents-memory-maintainer
-description: This skill should be used when the user wants to update AGENT.md, maintain project-level knowledge, or summarize project experience.
+description: This skill should be used when the user wants to update AGENTS.md, maintain project-level knowledge, or summarize project experience.
 version: 0.1.0
 ---
 
-# Agent.md 维护
+# AGENTS.md 维护
 
 ## 概述
 
-此 Skill 用于维护 AGENT.md 文件，更新项目级别的知识和经验。
+此 Skill 用于维护 AGENTS.md 文件，更新项目级别的知识和经验。
 
-## AGENT.md 结构
+## AGENTS.md 结构
 
 ```markdown
 # 项目名称
@@ -55,7 +55,7 @@ version: 0.1.0
 ## 更新时机
 
 ### 项目启动时
-- 创建初始 AGENT.md
+- 创建初始 AGENTS.md
 - 填写项目基本信息
 
 ### 开发过程中

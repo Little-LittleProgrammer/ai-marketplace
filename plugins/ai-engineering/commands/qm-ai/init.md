@@ -1,6 +1,6 @@
 ---
 name: qm-ai:init
-description: Initialize the project by analyzing existing code and generating or updating AGENT.md with project knowledge summary
+description: Initialize the project by analyzing existing code and generating or updating AGENTS.md with project knowledge summary
 argument-hint: ""
 allowed-tools:
   - Read
@@ -12,14 +12,14 @@ allowed-tools:
 
 # 冷启动初始化
 
-Analyze existing project structure and generate or update AGENT.md.
+Analyze existing project structure and generate or update AGENTS.md.
 
 ## Instructions
 
 1. **Load required skills**
    - **memory-system**: Validate memory structure specification
    - **service-overview**: Establish service boundaries and directory structure
-   - **agents-memory-maintainer**: Enforce AGENT.md structure quality
+   - **agents-memory-maintainer**: Enforce AGENTS.md structure quality
    - **index-manage**: Check and repair index consistency
 
 2. **Analyze project**
@@ -27,7 +27,7 @@ Analyze existing project structure and generate or update AGENT.md.
    - Identify technology stack (Node.js/Python/Go/etc.)
    - Detect frameworks and databases
 
-3. **Generate AGENT.md**
+3. **Generate AGENTS.md**
    - Project overview
    - Technology stack
    - Architecture summary
@@ -47,7 +47,7 @@ Analyze existing project structure and generate or update AGENT.md.
 | As needed | `service-architecture` | Architecture style extraction |
 | As needed | `service-business` | Business logic identification |
 | As needed | `service-ops` | API contract mapping |
-| Required | `agents-memory-maintainer` | AGENT.md structure |
+| Required | `agents-memory-maintainer` | AGENTS.md structure |
 | Required | `index-manage` | Index consistency |
 
 ## 下一个可用命令

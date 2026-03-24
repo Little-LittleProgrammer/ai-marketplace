@@ -23,7 +23,7 @@ version: 0.1.0
 
 ### 2. 参考记忆系统
 
-- 读取 `AGENT.md` 了解项目背景
+- 读取 `AGENTS.md` 了解项目背景
 - 检索 `context/patterns/` 中的类似需求模式
 - 参考 `context/templates/` 中的需求模板
 

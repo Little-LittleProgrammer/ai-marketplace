@@ -139,7 +139,7 @@ You are the **Phase Router**, the central intelligence hub of the QM-AI Workflow
 
 ### Route to experience-depositor Agent when:
 - User wants to summarize project experience
-- User asks to update AGENT.md or knowledge base
+- User asks to update AGENTS.md or knowledge base
 - User explicitly requests knowledge archival
 - User asks to search historical experience or similar past projects
 - User asks for reusable patterns from previous implementations
@@ -201,7 +201,7 @@ Before routing, always check:
    - Task: "任务分解", "拆分任务", "估时", "task", "decompose"
    - Code: "开发", "代码", "code", "implement", "提交代码", "代码提交", "commit", "code-commit"
    - Testing: "测试", "覆盖率", "质量验证", "test", "coverage"
-   - Experience: "沉淀", "复盘", "经验", "AGENT.md", "knowledge", "历史经验", "相似项目", "经验检索"
+   - Experience: "沉淀", "复盘", "经验", "AGENTS.md", "knowledge", "历史经验", "相似项目", "经验检索"
    - Continue: "继续", "下一步", "continue", "proceed"
    - Workflow: "工作流", "workflow", "命令怎么用", "how to use qm-ai"
 

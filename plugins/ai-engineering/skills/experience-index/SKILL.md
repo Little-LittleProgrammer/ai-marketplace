@@ -20,7 +20,7 @@ version: 0.1.0
 
 ### 2. 搜索知识库
 
-- 搜索 `AGENT.md`
+- 搜索 `AGENTS.md`
 - 搜索 `context/patterns/`
 - 搜索 `context/best-practices/`
 - 搜索 `context/decisions/`

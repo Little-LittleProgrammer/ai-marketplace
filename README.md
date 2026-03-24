@@ -7,7 +7,7 @@
 - **智能意图路由**: phase-router 分析用户意图并分发到对应的专业 Agent
 - **Multi-Agent 协作**: 9 个专业 Agent 协同工作（路由、需求、设计、任务、代码协调、前端开发、后端开发、测试、沉淀）
 - **分步确认流程**: 每个阶段输出产物需用户审核确认后进入下一阶段
-- **记忆系统**: AGENT.md + context/知识库，支持持续学习和经验沉淀
+- **记忆系统**: AGENTS.md + context/知识库，支持持续学习和经验沉淀
 - **断点续传**: SessionEnd Hook 刷新 `.qm-ai/state.json` 的 `updated_at` 并提示未落盘产物，支持中断后恢复
 - **阶段回滚**: 支持回退到上一阶段重新处理，保留当前产物
 
@@ -36,7 +36,7 @@ cc --plugin-dir /path/to/qm-ai-workflow
 ## 快速开始
 
 ```bash
-# 1. 冷启动初始化（分析现有项目，生成 AGENT.md）
+# 1. 冷启动初始化（分析现有项目，生成 AGENTS.md）
 /qm-ai:init
 
 # 2. 启动工作流（提供需求描述或飞书文档链接）
@@ -69,7 +69,7 @@ cc --plugin-dir /path/to/qm-ai-workflow
 | **任务分解** | TASK | task.md | task-decomposer | /qm-ai:continue |
 | **代码开发** | CODING | 源代码 | code-executor | /qm-ai:continue |
 | **测试验证** | TESTING | 测试代码 | test-generator | /qm-ai:continue |
-| **知识沉淀** | COMPLETE | AGENT.md 更新 | experience-depositor | /qm-ai:knowledge 或 /qm-ai:optimize-flow |
+| **知识沉淀** | COMPLETE | AGENTS.md 更新 | experience-depositor | /qm-ai:knowledge 或 /qm-ai:optimize-flow |
 
 **阶段流转说明**:
 - 每个阶段完成后使用 `/qm-ai:continue` 进入下一阶段
@@ -80,7 +80,7 @@ cc --plugin-dir /path/to/qm-ai-workflow
 
 ```
 project/
-├── AGENT.md                    # 项目全局知识
+├── AGENTS.md                    # 项目全局知识
 ├── .qm-ai/
 │   └── state.json             # 工作流状态文件（/qm-ai:start 创建）
 ├── requirement/               # 需求文档存储
@@ -141,7 +141,7 @@ project/
 - `experience-index` - 经验检索
 - `mate-maintainer` - 元数据维护
 - `index-manage` - 知识索引管理
-- `agents-memory-maintainer` - AGENT.md 维护
+- `agents-memory-maintainer` - AGENTS.md 维护
 
 #### 服务分析 (4 个)
 - `service-overview` - 服务概览分析
@@ -159,7 +159,7 @@ project/
 
 | 命令 | 功能 | 参数 |
 |------|------|------|
-| `/qm-ai:init` | 冷启动初始化：分析现有项目，生成/更新 AGENT.md | 无 |
+| `/qm-ai:init` | 冷启动初始化：分析现有项目，生成/更新 AGENTS.md | 无 |
 | `/qm-ai:start` | 启动工作流：接受需求描述或飞书文档链接 | `<requirement or URL>` |
 | `/qm-ai:continue` | 确认当前阶段产物，进入下一阶段 | 无 |
 | `/qm-ai:rollback` | 回滚到上一阶段，保留当前产物 | 无 |
@@ -185,7 +185,7 @@ project/
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     数据存储层                               │
-│  AGENT.md │ requirement/ │ context/ │ workspace/ │ .qm-ai/ │
+│  AGENTS.md │ requirement/ │ context/ │ workspace/ │ .qm-ai/ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -210,7 +210,7 @@ project/
          ├─→ test-generator → 测试代码
          │        └─→ testing
          │
-         └─→ experience-depositor → AGENT.md 更新
+         └─→ experience-depositor → AGENTS.md 更新
                   └─→ experience-index, index-manage, ...
 ```
 
@@ -218,7 +218,7 @@ project/
 
 ### 1. 冷启动
 - 新项目或现有项目首次使用时，先执行 `/qm-ai:init`
-- 生成 AGENT.md 和 context/知识库结构
+- 生成 AGENTS.md 和 context/知识库结构
 
 ### 2. 需求分析
 - 提供尽可能详细的需求描述
@@ -247,7 +247,7 @@ project/
 ### 6. 知识沉淀
 - 项目完成后执行 `/qm-ai:optimize-flow`
 - 提取可复用模式和最佳实践
-- 更新 AGENT.md 和知识库
+- 更新 AGENTS.md 和知识库
 
 ## 故障恢复
 
